@@ -22,6 +22,11 @@
   flex-wrap: wrap;
 }
 
+.restaurant-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .restaurant-card {
   width: 12%;
   border: 1px solid black;
