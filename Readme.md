@@ -10,7 +10,9 @@ Implemented :
 
 - Utilization of Swiggy's live API data to fetch real-time restaurant information
 - Shimmer UI, lazy loading, and dynamic routing for enhanced performance and seamless navigation
-  To be implemented :
+
+To be implemented :
+
 - Dynamic search bar with auto-suggestion and debouncing techniques for a smooth user experience
 - Infinite scrolling for improved performance and seamless browsing of restaurant listings
 - Conditional rendering and caching strategies for enhanced user experience
