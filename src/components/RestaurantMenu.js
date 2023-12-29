@@ -4,79 +4,62 @@ import Shimmer from "./Shimmer";
 import { IMG_CDN_URL } from "../config";
 
 const RestaurantMenu = () => {
-  const [restaurant, setRestaurant] = useState(null);
-  const [restaurantDetails, setRestaurantDetails] = useState([]);
+  // const [restaurant, setRestaurant] = useState(null);
+  const [restaurantDetails, setRestaurantDetails] = useState({
+    items: [],
+    details: {},
+  });
   const { id } = useParams();
 
   useEffect(() => {
-    getRestaurantInfo(id);
-  }, []);
+    const getRestaurantInfo = async () => {
+      try {
+        const response = await fetch(
+          `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=${id}`
+        );
+        const json = await response.json();
 
-  async function getRestaurantInfo(currentId) {
-    try {
-      const response = await fetch(
-        `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=${currentId}`
-      );
-      console.log(
-        `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=${currentId}`
-      );
-      const json = await response.json();
-
-      setRestaurant(json.data);
-      console.log("Complete Restaurant Data ->", restaurant);
-      const resData = getRestaurantDetails();
-      setRestaurantDetails(resData);
-      console.log("Essential res data ->", resData);
-    } catch (error) {
-      console.error("Error fetching restaurant info:", error);
-    }
-  }
-
-  function getRestaurantDetails() {
-    if (!restaurant) return [];
-    const data = [];
-    const itemData = [];
-    let itemsCount =
-      restaurant.cards[2].groupedCard.cardGroupMap.REGULAR.cards[2].card.card
-        .itemCards.length;
-    console.log("Items Count ->", itemsCount);
-
-    const itemsInfo =
-      restaurant.cards[2].groupedCard.cardGroupMap.REGULAR.cards[2].card.card
-        .itemCards;
-    itemsInfo.forEach((item) => {
-      const itemInfo = item.card?.info;
-      if (itemInfo) {
-        itemData.push({
-          item: {
-            id: itemInfo.id ?? "",
-            name: itemInfo.name ?? "",
-            price: itemInfo.price ?? "",
-          },
-        });
+        // setRestaurant(json.data);
+        const resData = getRestaurantDetails(json.data);
+        setRestaurantDetails(resData);
+        console.log("Essential res data ->", resData);
+      } catch (error) {
+        console.error("Error fetching restaurant info:", error);
       }
-    });
-    data.push(itemData);
-    restaurant.cards.forEach((card, index) => {
-      const cardInfo = card.card?.card?.info;
+    };
 
-      if (cardInfo) {
-        data.push({
-          name: cardInfo.name ?? "",
-          image: IMG_CDN_URL + (cardInfo.cloudinaryImageId ?? ""),
-          city: cardInfo.city ?? "",
-          locality: cardInfo.locality ?? "",
-          costForTwo: cardInfo.costForTwoMessage ?? "",
-          avgRating: cardInfo.avgRating ?? "",
-          cuisines: cardInfo.cuisines ?? "",
-        });
-      }
-    });
+    getRestaurantInfo();
+  }, [id]);
 
-    return data;
-  }
+  const getRestaurantDetails = (restaurantData) => {
+    if (!restaurantData) return { items: [], details: {} };
 
-  return !restaurant ? (
+    const itemData = restaurantData?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card
+      .itemCards?.map((item) => {
+        const itemInfo = item.card?.info;
+        return {
+          id: itemInfo?.id ?? "",
+          name: itemInfo?.name ?? "",
+          price: (itemInfo?.price ?? 0) / 100,
+        };
+      }) || [];
+
+    const cardInfo = restaurantData?.cards[0]?.card?.card?.info;
+
+    const restaurantDetailsData = {
+      name: cardInfo?.name ?? "",
+      image: IMG_CDN_URL + (cardInfo?.cloudinaryImageId ?? ""),
+      city: cardInfo?.city ?? "",
+      locality: cardInfo?.locality ?? "",
+      costForTwo: cardInfo?.costForTwoMessage ?? "",
+      avgRating: cardInfo?.avgRating ?? "",
+      cuisines: cardInfo?.cuisines ?? "",
+    };
+
+    return { items: itemData, details: restaurantDetailsData };
+  };
+
+  return !restaurantDetails ? (
     <div className="shimmer-list">
       {Array(14)
         .fill()
@@ -87,16 +70,13 @@ const RestaurantMenu = () => {
   ) : (
     <div>
       <h1>Restaurant Menu : {id}</h1>
-      {restaurantDetails.length > 0 && (
+      {restaurantDetails.details && (
         <>
-          <h2>{restaurantDetails[1].name}</h2>
-          <img
-            src={restaurantDetails[1].image}
-            alt={restaurantDetails[1].name}
-          />
+          <h2>{restaurantDetails.details.name}</h2>
+          <img src={restaurantDetails.details.image} alt={restaurantDetails.details.name} />
         </>
       )}
-      {restaurantDetails.length === 0 && <p>Loading restaurant details...</p>}
+      {restaurantDetails.items.length === 0 && <p>Loading restaurant details...</p>}
     </div>
   );
 };
