@@ -1,12 +1,13 @@
+import { Link } from "react-router-dom";
 const Title = () => {
   return (
-    <a href="/">
+    <Link to="/">
       <img
         className="logo"
         src={require("../../assets/images/logo.png")}
         alt="logo"
       />
-    </a>
+    </Link>
   );
 };
 
@@ -16,8 +17,12 @@ const Header = () => {
       <Title />
       <div className="nav-items">
         <ul>
-          <li>Home</li>
-          <li>About</li>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/about">About</Link>
+          </li>
           <li>Contact</li>
           <li>Cart</li>
         </ul>

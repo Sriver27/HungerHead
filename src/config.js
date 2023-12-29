@@ -1,8 +1,28 @@
 export const IMG_CDN_URL =
   "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_508,h_320,c_fill/";
-export const swiggy_api_URL =
-  "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&page_type=DESKTOP_WEB_LISTING#";
+
 export const shimmer_card_unit = 15;
+
+export const swiggy_api_URL =
+  "https://www.swiggy.com/dapi/restaurants/list/v5?lat=22.7230606&lng=88.34845659999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING";
+
+/** To get location based restaurants **/
+/*export let swiggy_api_URL = `https://www.swiggy.com/dapi/restaurants/list/v5?`;
+const getUserLocation = () => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        swiggy_api_URL += `lat=${latitude}&lng=${longitude}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`;
+        resolve({ lat: latitude, lng: longitude });
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+};
+getUserLocation(); */
 
 export const restaurantList = [
   {

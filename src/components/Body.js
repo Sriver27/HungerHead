@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
-import Shimmer from "./Shimmer";
-import NotFoundPage from "./NotFound";
+import { useEffect, useState } from "react"; /* This is named export */
+import Shimmer from "./Shimmer"; /* This is default export */
 import { swiggy_api_URL } from "../config";
+import { Link } from "react-router-dom";
 
-// Filter the restaurant data according to the input type
+// Filter the restaurant data according input type
 function filterData(searchText, restaurants) {
   const resFilterData = restaurants.filter((restaurant) =>
     restaurant?.info?.name.toLowerCase().includes(searchText.toLowerCase())
@@ -12,36 +12,47 @@ function filterData(searchText, restaurants) {
   return resFilterData;
 }
 
-// Body Component for the body section: It contains all restaurant cards
+// Body Component for body section: It contain all restaurant cards
 const Body = () => {
+  // useState: To create a state variable, searchText, allRestaurants and filteredRestaurants is local state variable
   const [searchText, setSearchText] = useState("");
   const [allRestaurants, setAllRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
-  const [showNotFound, setShowNotFound] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
+  // use useEffect for one time call getRestaurants using empty dependency array
   useEffect(() => {
     getRestaurants();
   }, []);
 
+  // async function getRestaurant to fetch Swiggy API data
   async function getRestaurants() {
+    // handle the error using try... catch
     try {
       const response = await fetch(swiggy_api_URL);
       const json = await response.json();
 
+      // initialize checkJsonData() function to check Swiggy Restaurant data
       async function checkJsonData(jsonData) {
         for (let i = 0; i < jsonData?.data?.cards.length; i++) {
+          // initialize checkData for Swiggy Restaurant data
           let checkData =
             json?.data?.cards[i]?.card?.card?.gridElements?.infoWithStyle
               ?.restaurants;
 
+          console.log(checkData);
+
+          // if checkData is not undefined then return it
           if (checkData !== undefined) {
             return checkData;
           }
         }
       }
 
+      // call the checkJsonData() function which return Swiggy Restaurant data
       const resData = await checkJsonData(json);
 
+      // update the state variable restaurants with Swiggy API data
       setAllRestaurants(resData);
       setFilteredRestaurants(resData);
     } catch (error) {
@@ -49,17 +60,22 @@ const Body = () => {
     }
   }
 
+  // use searchData function and set condition if data is empty show error message
   const searchData = (searchText, restaurants) => {
     if (searchText !== "") {
       const filteredData = filterData(searchText, restaurants);
       setFilteredRestaurants(filteredData);
-      setShowNotFound(filteredData.length === 0);
+      setErrorMessage("");
+      if (filteredData?.length === 0) {
+        setErrorMessage("No matches restaurant found");
+      }
     } else {
+      setErrorMessage("");
       setFilteredRestaurants(restaurants);
-      setShowNotFound(false);
     }
   };
 
+  // if allRestaurants is empty don't render restaurants cards
   if (!allRestaurants) return null;
 
   return (
@@ -71,26 +87,38 @@ const Body = () => {
           placeholder="Search a restaurant you want..."
           value={searchText}
           onChange={(e) => setSearchText(e.target.value)}
-        />
+        ></input>
         <button
           className="search-btn"
-          onClick={() => searchData(searchText, allRestaurants)}
+          onClick={() => {
+            searchData(searchText, allRestaurants);
+          }}
         >
           Search
         </button>
       </div>
-      {showNotFound && <NotFoundPage />}
+      {errorMessage && <div className="error-container">{errorMessage}</div>}
+
       {allRestaurants?.length === 0 ? (
-        <div className="restaurant-list">
-          {[...Array(15)].map((_, index) => (
-            <Shimmer key={index} />
-          ))}
+        <div className="shimmer-list">
+          {Array(14)
+            .fill()
+            .map((_, index) => (
+              <Shimmer key={index} />
+            ))}
         </div>
       ) : (
         <div className="restaurant-list">
-          {filteredRestaurants.map((restaurant) => (
-            <RestaurantCard key={restaurant?.info?.id} {...restaurant?.info} />
-          ))}
+          {filteredRestaurants.map((restaurant) => {
+            return (
+              <Link
+                to={`/restaurant/${restaurant?.info?.id}`}
+                key={restaurant?.info?.id}
+              >
+                <RestaurantCard {...restaurant?.info} />
+              </Link>
+            );
+          })}
         </div>
       )}
     </>

@@ -14,7 +14,7 @@
 }
 
 .logo {
-  width: 7%;
+  width: 5%;
 }
 
 .body {
@@ -71,6 +71,11 @@
   animation: shimmer 1.5s infinite linear;
 }
 
+.shimmer-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 /* a {
   text-decoration: none; 
   color: inherit; 
@@ -89,13 +94,9 @@ image {
   max-height: "50vh";
   margin-bottom: "20px";
 }
-.text {
-  font-size: "24px";
-  font-weight: "bold";
-  cursor: "default";
-}
+
 .subtext {
-  font-size: "24px";
+  font-size: "22px";
   font-weight: "bold";
   cursor: "pointer";
 }

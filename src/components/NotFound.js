@@ -16,8 +16,6 @@ const NotFoundPage = () => {
       {/* make just Continue Browsing as blue color text and text in same line as subtext and onClick add a link to home page */}
 
       <p className="subtext">
-        <span className="text">No Restaurants Found</span>
-        {"    "}
         <a href="/">{"< Continue Browsing />"}</a>
       </p>
     </div>
