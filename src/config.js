@@ -6,6 +6,12 @@ export const shimmer_card_unit = 15;
 export const swiggy_api_URL =
   "https://www.swiggy.com/dapi/restaurants/list/v5?lat=22.7230606&lng=88.34845659999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING";
 
+export const ITEM_IMG_CDN_URL =
+  "https://res.cloudinary.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_208,h_208,c_fit/";
+
+export const swiggy_menu_api_URL =
+  "https://corsproxy.io/?https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=";
+
 /** To get location based restaurants **/
 /*export let swiggy_api_URL = `https://www.swiggy.com/dapi/restaurants/list/v5?`;
 const getUserLocation = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Shimmer from "./Shimmer";
-import { IMG_CDN_URL } from "../config";
+import { IMG_CDN_URL, swiggy_menu_api_URL } from "../config";
 
 const RestaurantMenu = () => {
   // const [restaurant, setRestaurant] = useState(null);
@@ -18,8 +18,9 @@ const RestaurantMenu = () => {
   const getRestaurantInfo = async () => {
     try {
       const response = await fetch(
-        `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`
+        // `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`
         // "https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=181678&catalog_qa=undefined&submitAction=ENTER"
+        swiggy_menu_api_URL + id
       );
       console.log("Response ->", response);
       const json = await response.json();
