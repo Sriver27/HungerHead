@@ -1,67 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import Shimmer from "./Shimmer";
-import { IMG_CDN_URL, swiggy_menu_api_URL } from "../config";
+import useRestaurant from "./useRestaurant";
 
 const RestaurantMenu = () => {
-  // const [restaurant, setRestaurant] = useState(null);
-  const [restaurantDetails, setRestaurantDetails] = useState({
-    items: [],
-    details: {},
-  });
   const { id } = useParams();
 
-  useEffect(() => {
-    getRestaurantInfo();
-  }, []);
-
-  const getRestaurantInfo = async () => {
-    try {
-      const response = await fetch(
-        // `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=${id}&catalog_qa=undefined&submitAction=ENTER`
-        // "https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=22.7230606&lng=88.34845659999999&restaurantId=181678&catalog_qa=undefined&submitAction=ENTER"
-        swiggy_menu_api_URL + id
-      );
-      console.log("Response ->", response);
-      const json = await response.json();
-      console.log("Json data ->", json.data);
-      const resData = getRestaurantDetails(json.data);
-      setRestaurantDetails(resData);
-      console.log("Essential res data ->", resData);
-    } catch (error) {
-      console.error("Error fetching restaurant info:", error);
-    }
-  };
-
-  const getRestaurantDetails = (restaurantData) => {
-    if (!restaurantData) return { items: [], details: {} };
-
-    const itemData =
-      restaurantData?.cards[2]?.groupedCard?.cardGroupMap?.REGULAR?.cards[2]?.card?.card.itemCards?.map(
-        (item) => {
-          const itemInfo = item.card?.info;
-          return {
-            id: itemInfo?.id ?? "",
-            name: itemInfo?.name ?? "",
-            price: (itemInfo?.price ?? 0) / 100,
-          };
-        }
-      ) || [];
-
-    const cardInfo = restaurantData?.cards[0]?.card?.card?.info;
-
-    const restaurantDetailsData = {
-      name: cardInfo?.name ?? "",
-      image: IMG_CDN_URL + (cardInfo?.cloudinaryImageId ?? ""),
-      city: cardInfo?.city ?? "",
-      locality: cardInfo?.locality ?? "",
-      costForTwo: cardInfo?.costForTwoMessage ?? "",
-      avgRating: cardInfo?.avgRating ?? "",
-      cuisines: cardInfo?.cuisines ?? "",
-    };
-
-    return { items: itemData, details: restaurantDetailsData };
-  };
+  const restaurantDetails = useRestaurant(id);
 
   return !restaurantDetails ? (
     <div className="shimmer-list">
@@ -81,6 +26,15 @@ const RestaurantMenu = () => {
             src={restaurantDetails.details.image}
             alt={restaurantDetails.details.name}
           />
+          {restaurantDetails.items.map((item) => {
+            return (
+              <div key={item.id}>
+                <h4>
+                  {item.name} : {item.price}
+                </h4>
+              </div>
+            );
+          })}
         </>
       )}
       {restaurantDetails.items.length === 0 && (

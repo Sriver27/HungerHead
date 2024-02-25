@@ -1,10 +1,12 @@
 import RestaurantCard from "./RestaurantCard";
-import { useEffect, useState } from "react"; /* This is named export */
-import Shimmer from "./Shimmer"; /* This is default export */
+import { useEffect, useState } from "react";
+import Shimmer from "./Shimmer";
 import { swiggy_api_URL } from "../config";
 import { Link } from "react-router-dom";
+import useConnectivityStatus from "./useConnectivityStatus";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchData } from "../redux/slices/apiSlice/apiActions";
 
-// Filter the restaurant data according input type
 function filterData(searchText, restaurants) {
   const resFilterData = restaurants.filter((restaurant) =>
     restaurant?.info?.name.toLowerCase().includes(searchText.toLowerCase())
@@ -12,47 +14,75 @@ function filterData(searchText, restaurants) {
   return resFilterData;
 }
 
-// Body Component for body section: It contain all restaurant cards
+const getUserLocation = () => {
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        resolve({ lat: latitude, lng: longitude });
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+};
+
 const Body = () => {
-  // useState: To create a state variable, searchText, allRestaurants and filteredRestaurants is local state variable
   const [searchText, setSearchText] = useState("");
+  // const [userLocation, setUserLocation] = useState({ lat: "", lng: "" });
   const [allRestaurants, setAllRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+  const dispatch = useDispatch();
+  const restaurantsList = useSelector((state) => state.data.fetchRestaurants);
+  const { userLocation, loading, error } = useSelector(
+    (state) => state.location
+  );
+  console.log("->", userLocation);
 
-  // use useEffect for one time call getRestaurants using empty dependency array
   useEffect(() => {
     getRestaurants();
+    const fetchUserLocation = async () => {
+      try {
+        const location = await getUserLocation();
+        // setUserLocation(location);
+      } catch (error) {
+        console.error("Error getting user location:", error);
+      }
+    };
+
+    fetchUserLocation();
   }, []);
 
-  // async function getRestaurant to fetch Swiggy API data
+  useEffect(() => {
+    const dynamicRestaurantListUrl =
+      swiggy_api_URL + "lat=" + userLocation?.lat + "&lng=" + userLocation?.lng;
+    console.log(dynamicRestaurantListUrl);
+    dispatch(fetchData("fetchRestaurants", dynamicRestaurantListUrl));
+  }, [dispatch]);
+
   async function getRestaurants() {
-    // handle the error using try... catch
     try {
       const response = await fetch(swiggy_api_URL);
       const json = await response.json();
 
-      // initialize checkJsonData() function to check Swiggy Restaurant data
       async function checkJsonData(jsonData) {
         for (let i = 0; i < jsonData?.data?.cards.length; i++) {
-          // initialize checkData for Swiggy Restaurant data
           let checkData =
             json?.data?.cards[i]?.card?.card?.gridElements?.infoWithStyle
               ?.restaurants;
 
           console.log(checkData);
 
-          // if checkData is not undefined then return it
           if (checkData !== undefined) {
             return checkData;
           }
         }
       }
 
-      // call the checkJsonData() function which return Swiggy Restaurant data
       const resData = await checkJsonData(json);
 
-      // update the state variable restaurants with Swiggy API data
       setAllRestaurants(resData);
       setFilteredRestaurants(resData);
     } catch (error) {
@@ -60,7 +90,6 @@ const Body = () => {
     }
   }
 
-  // use searchData function and set condition if data is empty show error message
   const searchData = (searchText, restaurants) => {
     if (searchText !== "") {
       const filteredData = filterData(searchText, restaurants);
@@ -75,11 +104,22 @@ const Body = () => {
     }
   };
 
-  // if allRestaurants is empty don't render restaurants cards
+  const isOnline = useConnectivityStatus();
+
+  if (!isOnline) {
+    return (
+      <>
+        <h1>Sorry, you are offline</h1>
+        <p>Connect to the internet to avail the services</p>
+      </>
+    );
+  }
+
   if (!allRestaurants) return null;
 
   return (
     <>
+      {console.log("Redux thunk fetched list -> ", restaurantsList?.data)}
       <div className="search-container">
         <input
           type="text"
