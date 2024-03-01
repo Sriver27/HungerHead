@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import Shimmer from "./Shimmer";
-import useRestaurant from "./useRestaurant";
+import {ShimmerCards} from "../components/ShimmerHome";
+import useRestaurant from "../custom-hooks/useRestaurant";
 
 const RestaurantMenu = () => {
   const { id } = useParams();
@@ -9,13 +9,7 @@ const RestaurantMenu = () => {
   const restaurantDetails = useRestaurant(id);
 
   return !restaurantDetails ? (
-    <div className="shimmer-list">
-      {Array(14)
-        .fill()
-        .map((_, index) => (
-          <Shimmer key={index} />
-        ))}
-    </div>
+    <ShimmerCards/>
   ) : (
     <div>
       <h1>Restaurant Menu : {id}</h1>

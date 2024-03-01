@@ -1,14 +1,15 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import Header from "./components/Header";
-import Body from "./components/Body";
-import About from "./components/About";
-import Error from "./components/Error";
-import RestaurantMenu from "./components/RestaurantMenu";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Error from "./pages/Placeholders/Error";
+import RestaurantMenu from "./pages/RestaurantMenu";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { Provider, useDispatch } from "react-redux";
 import { store } from "./redux/store";
 import { fetchUserLocation } from "./redux/slices/locationSlice/locationActions";
+import CategoryDetails from "./pages/Category/CategoryDetails";
 
 const AppLayout = () => {
   const dispatch = useDispatch();
@@ -32,7 +33,7 @@ const appRouter = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Body />,
+        element: <Home />,
       },
       {
         path: "/about",
@@ -41,6 +42,10 @@ const appRouter = createBrowserRouter([
       {
         path: "/restaurant/:id",
         element: <RestaurantMenu />,
+      },
+      {
+        path: "/restaurant/category/:categoryId",
+        element: <CategoryDetails />,
       },
     ],
   },
