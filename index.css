@@ -6,6 +6,16 @@ a {
 a:hover {
   color: inherit;
 }
+
+.utility-container a {
+  text-decoration: none;
+  color: #000;
+}
+
+.utility-container a:hover {
+  text-decoration: none;
+  color: black;
+}
 .header {
   display: flex;
   justify-content: space-between;
@@ -41,8 +51,8 @@ a:hover {
 
 .image {
   max-width: 100%;
-  max-height: 50vh;
-  margin-bottom: 20px;
+  max-height: 75vh;
+  margin-bottom: 40px;
 }
 
 .subtext {
@@ -50,13 +60,14 @@ a:hover {
   font-weight: bold;
   text-decoration: none;
   color: rgb(66, 66, 66);
+  padding-bottom: 20px;
 }
 
 .restaurant-list {
   flex-wrap: wrap;
   display: flex;
   margin: auto 3%;
-  justify-content: flex-start;
+  justify-content: center;
   min-height: 75vh;
 }
 
@@ -95,9 +106,6 @@ a:hover {
   width: 100%;
 }
 
-/* .restaurant-cuisine{
-  font-weight: 300;
-} */
 .restaurant-cuisine {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -121,33 +129,6 @@ a:hover {
   color: rgb(44, 44, 44);
   margin-bottom: 6px;
 }
-
-/* @keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
-}
-
-.restaurant-card.shimmer {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 1000px 100%;
-  animation: shimmer 1.5s infinite linear;
-  height: 280px;
-}
-
-.restaurant-card.shimmer > .restaurant-image {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 1000px 100%;
-  animation: shimmer 1.5s infinite linear;
-}
-
-.shimmer-list {
-  display: flex;
-  flex-wrap: wrap;
-} */
 
 .shimmer {
   min-height: 75vh;
@@ -206,11 +187,6 @@ a:hover {
   justify-content: "center";
   height: "80vh";
 }
-image {
-  max-width: "100%";
-  max-height: "50vh";
-  margin-bottom: "20px";
-}
 
 .subtext {
   font-size: "22px";
@@ -260,6 +236,7 @@ image {
   justify-content: space-between;
   align-items: center;
   margin: 25px 60px;
+  transition: all 20ms ease-in;
 }
 .search-container {
   margin-right: 50px;
@@ -363,7 +340,7 @@ image {
   border-radius: 5px;
   font-weight: 600;
   height: 17px !important;
-  width: 35px !important;
+  width: auto;
   text-align: center;
 }
 

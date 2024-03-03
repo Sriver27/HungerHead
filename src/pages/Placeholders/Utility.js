@@ -12,18 +12,11 @@ const Utility = ({ imgSrc, altText }) => {
             <p>Please connect to a network to avail the services</p>
           </>
         ) : (
-          <a href="/" style={{ styles }}>
-            {"< Continue Browsing />"}
-          </a>
+          <a href="/">{"< Continue Browsing />"}</a>
         )}
       </div>
     </div>
   );
-};
-
-const styles = {
-  textDecoration: "none",
-  color: "#fff",
 };
 
 export default Utility;

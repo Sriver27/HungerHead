@@ -1,19 +1,46 @@
 import RestaurantCard from "../components/RestaurantCard";
-import { useEffect } from "react";
+import { useEffect, useCallback, useState } from "react";
 import { Link } from "react-router-dom";
 import useConnectivityStatus from "../custom-hooks/useConnectivityStatus";
 import SearchContainer from "../components/SearchContainer";
 import CategoryMenu from "./Category/CategoryMenu";
 import { debounce } from "lodash";
 import Utility from "./Placeholders/Utility";
-import {ShimmerCards} from "../components/ShimmerHome";
+import { ShimmerCards } from "../components/ShimmerHome";
 import useRestaurantList from "../custom-hooks/useRestaurantList";
 
-
-
 const Body = () => {
+  const [filteredRestaurants, setFilteredRestaurants] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { allRestaurants, categoryMenu } = useRestaurantList();
 
-  const { allRestaurants, filteredRestaurants, errorMessage, categoryMenu, searchData } = useRestaurantList();
+  useEffect(() => {
+    setFilteredRestaurants(allRestaurants);
+  }, [allRestaurants]);
+
+  function filterData(searchText, restaurants) {
+    const resFilterData = restaurants.filter((restaurant) =>
+      restaurant?.info?.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+    return resFilterData;
+  }
+
+  const searchData = (searchText, restaurants) => {
+    console.log("I've got the search text: ", searchText);
+    if (searchText !== "") {
+      const filteredData = filterData(searchText, restaurants);
+      console.log("Filtered data: ", filteredData);
+      setFilteredRestaurants(filteredData);
+      setErrorMessage("");
+      if (filteredData?.length === 0) {
+        setErrorMessage("No matches restaurant found");
+        setFilteredRestaurants([]);
+      }
+    } else {
+      setErrorMessage("");
+      setFilteredRestaurants(restaurants);
+    }
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -35,11 +62,11 @@ const Body = () => {
     const stickyClass = "sticky";
 
     if (scrollPosition > scrollThreshold) {
-      bodyHeaderContainer.classList.add(stickyClass);
-      searchContainer.classList.add("sticky-top");
+      bodyHeaderContainer?.classList.add(stickyClass);
+      searchContainer?.classList.add("sticky-top");
     } else {
-      bodyHeaderContainer.classList.remove(stickyClass);
-      searchContainer.classList.remove("sticky-top");
+      bodyHeaderContainer?.classList.remove(stickyClass);
+      searchContainer?.classList.remove("sticky-top");
     }
   }, 20);
 
@@ -48,7 +75,10 @@ const Body = () => {
   if (!isOnline) {
     return (
       <>
-        <Utility imgSrc={require('../../assets/images/mars.png')} altText={"No connection found"} />
+        <Utility
+          imgSrc={require("../../assets/images/mars.png")}
+          altText={"No connection found"}
+        />
       </>
     );
   }
@@ -67,23 +97,26 @@ const Body = () => {
           />
         </div>
       </div>
-      {errorMessage && <Utility imgSrc={require('../../assets/images/error.jpg')} altText={errorMessage} />}
+      {errorMessage && (
+        <Utility
+          imgSrc={require("../../assets/images/error.jpg")}
+          altText={errorMessage}
+        />
+      )}
 
-      {filteredRestaurants?.length === 0 || filteredRestaurants === undefined    ? (
-        <ShimmerCards/>
-      ) : (
+      {filteredRestaurants?.length > 0 ? (
         <div className="restaurant-list">
-          {filteredRestaurants?.map((restaurant) => {
-            return (
-              <Link
-                to={`/restaurant/${restaurant?.info?.id}`}
-                key={restaurant?.info?.id}
-              >
-                <RestaurantCard {...restaurant?.info} />
-              </Link>
-            );
-          })}
+          {filteredRestaurants.map((restaurant) => (
+            <Link
+              to={`/restaurant/${restaurant?.info?.id}`}
+              key={restaurant?.info?.id}
+            >
+              <RestaurantCard {...restaurant?.info} />
+            </Link>
+          ))}
         </div>
+      ) : (
+        filteredRestaurants === undefined && <ShimmerCards />
       )}
     </>
   );
